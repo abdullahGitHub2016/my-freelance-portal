@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('description'); // e.g., "Bid on: Build a Laravel Website"
             $table->timestamps();
         });
-        
+
         // 4. Add bid_connects to proposals table for "Boosted" bids
         Schema::table('proposals', function (Blueprint $table) {
             $table->integer('bid_connects')->default(0)->after('bid_amount');
