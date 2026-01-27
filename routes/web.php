@@ -25,6 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects/create', [ProjectListingController::class, 'create'])->name('projects.create');
     Route::post('/projects', [ProjectListingController::class, 'store'])->name('projects.store');
     Route::get('/projects/{projectListing}', [ProjectListingController::class, 'show'])->name('projects.show');
+    // This will be the main "Find Work" page
+    Route::get('/find-work', [ProjectListingController::class, 'index'])->name('projects.index');
 
     // --- Proposals ---
     // Freelancers submit proposals to a specific project
@@ -38,6 +40,7 @@ Route::post('/projects/{projectListing}/proposals', [ProposalController::class, 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
 require __DIR__.'/auth.php';

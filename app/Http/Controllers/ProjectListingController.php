@@ -16,15 +16,16 @@ class ProjectListingController extends Controller
     /**
      * Display the 'Find Work' feed.
      */
-    public function index(): Response
+    public function index(Request $request)
     {
-        $projects = ProjectListing::where('status', 'open')
-            ->with('client:id,name')
-            ->latest()
-            ->get();
+        $jobs = ProjectListing::query()
+            ->filter($request->only(['search', 'experience_levels', 'budget_type']))
+            ->paginate(10)
+            ->withQueryString();
 
-        return Inertia::render('Projects/Index', [
-            'projects' => $projects
+        return Inertia::render('Projects/SearchResults', [ // Path updated to Projects/
+            'jobs' => $jobs,
+            'filters' => $request->all(),
         ]);
     }
 
@@ -48,29 +49,29 @@ class ProjectListingController extends Controller
      * Store a new project listing.
      */
     public function store(Request $request, ProjectListing $projectListing)
-{
-    // DEBUG: If you still get the error, uncomment the line below to test
-    // dd($projectListing->toArray());
+    {
+        // DEBUG: If you still get the error, uncomment the line below to test
+        // dd($projectListing->toArray());
 
-    $id = $projectListing->id; // The red underline should disappear now
+        $id = $projectListing->id; // The red underline should disappear now
 
-    $validated = $request->validate([
-        'cover_letter'   => 'required|string|min:20',
-        'bid_amount'     => 'required|numeric',
-        'estimated_days' => 'required|integer',
-    ]);
+        $validated = $request->validate([
+            'cover_letter'   => 'required|string|min:20',
+            'bid_amount'     => 'required|numeric',
+            'estimated_days' => 'required|integer',
+        ]);
 
-    // We manually set the job_id to ensure it's not null
-    $proposal = new \App\Models\Proposal();
-    $proposal->job_id = $projectListing->id;
-    $proposal->freelancer_id = Auth::id();
-    $proposal->cover_letter = $validated['cover_letter'];
-    $proposal->bid_amount = $validated['bid_amount'];
-    $proposal->estimated_days = $validated['estimated_days'];
-    $proposal->status = 'pending';
+        // We manually set the job_id to ensure it's not null
+        $proposal = new \App\Models\Proposal();
+        $proposal->job_id = $projectListing->id;
+        $proposal->freelancer_id = Auth::id();
+        $proposal->cover_letter = $validated['cover_letter'];
+        $proposal->bid_amount = $validated['bid_amount'];
+        $proposal->estimated_days = $validated['estimated_days'];
+        $proposal->status = 'pending';
 
-    $proposal->save();
+        $proposal->save();
 
-    return redirect()->back()->with('success', 'Proposal submitted!');
-}
+        return redirect()->back()->with('success', 'Proposal submitted!');
+    }
 }
