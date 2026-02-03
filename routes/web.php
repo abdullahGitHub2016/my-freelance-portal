@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProjectListingController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProposalController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,12 +21,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // --- Project Listings ---
-    Route::get('/projects', [ProjectListingController::class, 'index'])->name('projects.index');
-    Route::get('/projects/create', [ProjectListingController::class, 'create'])->name('projects.create');
-    Route::post('/projects', [ProjectListingController::class, 'store'])->name('projects.store');
-    Route::get('/projects/{projectListing}', [ProjectListingController::class, 'show'])->name('projects.show');
+    Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+    Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/projects/{projectListing}', [ProjectController::class, 'show'])->name('projects.show');
     // This will be the main "Find Work" page
-    Route::get('/find-work', [ProjectListingController::class, 'index'])->name('projects.index');
+    Route::get('/find-work', [ProjectController::class, 'index'])->name('projects.index');
 
     // --- Proposals ---
     // Freelancers submit proposals to a specific project

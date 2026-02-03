@@ -36,6 +36,7 @@ CREATE TABLE `cache` (
 
 LOCK TABLES `cache` WRITE;
 /*!40000 ALTER TABLE `cache` DISABLE KEYS */;
+INSERT INTO `cache` VALUES ('laravel-cache-admin@localhost.com|127.0.0.1','i:2;',1770107122),('laravel-cache-admin@localhost.com|127.0.0.1:timer','i:1770107122;',1770107122);
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -193,7 +194,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,7 +203,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2025_08_26_100418_add_two_factor_columns_to_users_table',1),(5,'2026_01_11_091521_create_project_listings_table',1),(6,'2026_01_11_091808_create_proposals_table',1),(7,'2026_01_11_095647_add_role_to_users_table',1),(8,'2026_01_24_085442_add_connects_to_system',2);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2025_08_26_100418_add_two_factor_columns_to_users_table',1),(5,'2026_01_11_091521_create_projects_table',1),(6,'2026_01_11_091808_create_proposals_table',1),(7,'2026_01_11_095647_add_role_to_users_table',1),(8,'2026_01_24_085442_add_connects_to_system',2);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -231,13 +232,13 @@ LOCK TABLES `password_reset_tokens` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `project_listings`
+-- Table structure for table `projects`
 --
 
-DROP TABLE IF EXISTS `project_listings`;
+DROP TABLE IF EXISTS `projects`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `project_listings` (
+CREATE TABLE `projects` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `client_id` bigint unsigned NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -253,19 +254,19 @@ CREATE TABLE `project_listings` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `project_listings_client_id_foreign` (`client_id`),
-  CONSTRAINT `project_listings_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+  KEY `projects_client_id_foreign` (`client_id`),
+  CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `project_listings`
+-- Dumping data for table `projects`
 --
 
-LOCK TABLES `project_listings` WRITE;
-/*!40000 ALTER TABLE `project_listings` DISABLE KEYS */;
-INSERT INTO `project_listings` VALUES (1,1,'Build a Laravel Website','Looking for a developer to build a site like Upwork.','Web Development','fixed',1200.00,'intermediate',NULL,'open',NULL,4,'2026-01-11 04:02:50','2026-01-11 04:02:50');
-/*!40000 ALTER TABLE `project_listings` ENABLE KEYS */;
+LOCK TABLES `projects` WRITE;
+/*!40000 ALTER TABLE `projects` DISABLE KEYS */;
+INSERT INTO `projects` VALUES (1,1,'Build a Laravel Website','Looking for a developer to build a site like Upwork.','Web Development','fixed',1200.00,'intermediate',NULL,'open',NULL,4,'2026-01-11 04:02:50','2026-01-11 04:02:50');
+/*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -290,7 +291,7 @@ CREATE TABLE `proposals` (
   UNIQUE KEY `proposals_job_id_freelancer_id_unique` (`job_id`,`freelancer_id`),
   KEY `proposals_freelancer_id_foreign` (`freelancer_id`),
   CONSTRAINT `proposals_freelancer_id_foreign` FOREIGN KEY (`freelancer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `proposals_job_id_foreign` FOREIGN KEY (`job_id`) REFERENCES `project_listings` (`id`) ON DELETE CASCADE
+  CONSTRAINT `proposals_job_id_foreign` FOREIGN KEY (`job_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -330,7 +331,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('JhLH8LY3dNrZa5WmKxPaNirMbtnhEmtXFr9rxMhz',3,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUTJWU0FWMmp5Y1NZYXVUc3RITHV3Slc1eXdOMVRjNVM2RjZhV2tIUSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9wcm9qZWN0cyI7czo1OiJyb3V0ZSI7czoxNDoicHJvamVjdHMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=',1769508882),('OOBPndNLsko0aeYtOkFfbfLFjY1nnUGoeR4epSsv',3,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo2OntzOjY6Il90b2tlbiI7czo0MDoiU0FTSVhVNkNIT05ObFNWbkFtaEFaZ3RQVWgzdVh5WE0xVEpzZk5MTCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MztzOjM6InVybCI7YTowOnt9czo0OiJhdXRoIjthOjE6e3M6MjE6InBhc3N3b3JkX2NvbmZpcm1lZF9hdCI7aToxNzY4ODk4NjY1O319',1768898668),('Tu2NpWD5giGVlDDummi21HcWFx4teULmactP3jIo',3,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoiMGhWTURVMENIcGVRQjdFdDdxNHYyeUNaMVVrMkdpVllObXlIdzJGbCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MztzOjM6InVybCI7YTowOnt9czo0OiJhdXRoIjthOjE6e3M6MjE6InBhc3N3b3JkX2NvbmZpcm1lZF9hdCI7aToxNzY4ODk5ODk2O31zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czoyOToiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3Byb2ZpbGUiO3M6NToicm91dGUiO3M6MTI6InByb2ZpbGUuZWRpdCI7fX0=',1768902220),('XOF2Ij0nz6ju4Oq8zdv2bsqiW6t4SwKx8x2mu93s',3,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoibjN3UUhrWE9FZzFTQWtRSUFhc2hROE16eHdQdHBJRmE2am15QlFBSiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9maW5kLXdvcmsiO3M6NToicm91dGUiO3M6MTQ6InByb2plY3RzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Mzt9',1769256797);
+INSERT INTO `sessions` VALUES ('Bkv75JgGv6ppHMg7Mh7yK0hx2cSvjraxqELpwgQ2',2,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRkswalJlNFpsY1VjcjhCY0tpZUE5dlZwZGdLYURFdGRVSko3SFE1ViI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MjtzOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czozMDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3Byb2plY3RzIjtzOjU6InJvdXRlIjtzOjE0OiJwcm9qZWN0cy5pbmRleCI7fX0=',1770107673);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -366,7 +367,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'John Client','client@example.com','client',50,NULL,'$2y$12$3C3d3E9neXiUFyxWm95m7u6Hrg/CNbs/Sr6Uq5UBAc88/nLoONpQi',NULL,NULL,NULL,NULL,'2026-01-11 04:02:50','2026-01-11 04:02:50'),(2,'Jane Freelancer','freelancer@example.com','freelancer',50,NULL,'$2y$12$Svto5F7WlVeQnUURBwxYKO8T.yoHWCQGInjF/mvwUUvw0p2M5sgP6',NULL,NULL,NULL,NULL,'2026-01-11 04:02:50','2026-01-11 04:02:50'),(3,'AB','demo@localhost.com','freelancer',50,NULL,'$2y$12$DrcRRMhFfx5PctUS.btgN.9tDyTIc4mua5iIgIBTy6dsJDM3Tqj/u','eyJpdiI6IjNBZGtKWVhESzRNUkpSQ1ArTE9NS2c9PSIsInZhbHVlIjoiV2lqd1BaSDI5dVlXdkhNa2RObnRWUFEyUDBYMzc5bWpuY21JMjFyc0xIST0iLCJtYWMiOiIxNDhhOTExMDVmMzQ2MTMyZTExZGUyMTYyMDI5NDBjMTIxOWU5YWFjZGI3NDUwZTc4ZTk0MTI4MDIxZTc3ZGRkIiwidGFnIjoiIn0=','eyJpdiI6IjM1NndabnE1d0JOTHVwK2ZuZUhRSGc9PSIsInZhbHVlIjoidmI4cWNjbEZUTHUwYUdhYWY0c2duR3pWS0Izd21jZ3RnODhEeG5TSU5MZFhDTE1vbXYxWEVaY0V2UmNocGZ5WFM1YXpvQjl6TldCSExsVmdNT2RGU1hSNnZOYUdRZXNzeUhjb2FNaTVJY0pwNHBWR2ZVa0dWQlVVQ2gxUy9FWEk2VFRCSzU2dFVNNEh5ckU3M1IweGhDekJoMFBUMzc4NVoyM28zT1FKRU1jQmtvWG5Dd1dib1RsSVNFUG5Ga0ZUbmlQQUJnU25sSThIanEyRWNuT2Y1cmZYbCsxSG5Na256NHhmdTRaYVVCTHZMWE94K0pHSytGMktJa2Fya29GWU0wUnRLVHFmWUFPd0E1bTBKTktvM2c9PSIsIm1hYyI6ImNmYmM4MTU1NmQ5ZGIwMTRhOTFmNGYyYzVkMDcyY2ExMmIzMzgwY2MzMTU5Mzk2YzRkMjUzOTVmYTlkMDc3MjEiLCJ0YWciOiIifQ==',NULL,'B79svRYtNyBwztc6864HOj7kgE1kjhequwsShgCznlNwZ0EK2YwtBCOtyQqI','2026-01-11 04:50:08','2026-01-20 02:36:24');
+INSERT INTO `users` VALUES (1,'John Client','client@example.com','client',50,NULL,'$2y$12$3C3d3E9neXiUFyxWm95m7u6Hrg/CNbs/Sr6Uq5UBAc88/nLoONpQi',NULL,NULL,NULL,NULL,'2026-01-11 04:02:50','2026-01-11 04:02:50'),(2,'Jane Freelancer','freelancer@example.com','freelancer',50,NULL,'$2y$12$Svto5F7WlVeQnUURBwxYKO8T.yoHWCQGInjF/mvwUUvw0p2M5sgP6',NULL,NULL,NULL,NULL,'2026-01-11 04:02:50','2026-01-11 04:02:50'),(3,'AB','demo@localhost.com','freelancer',50,NULL,'$2y$12$DrcRRMhFfx5PctUS.btgN.9tDyTIc4mua5iIgIBTy6dsJDM3Tqj/u','eyJpdiI6IjNBZGtKWVhESzRNUkpSQ1ArTE9NS2c9PSIsInZhbHVlIjoiV2lqd1BaSDI5dVlXdkhNa2RObnRWUFEyUDBYMzc5bWpuY21JMjFyc0xIST0iLCJtYWMiOiIxNDhhOTExMDVmMzQ2MTMyZTExZGUyMTYyMDI5NDBjMTIxOWU5YWFjZGI3NDUwZTc4ZTk0MTI4MDIxZTc3ZGRkIiwidGFnIjoiIn0=','eyJpdiI6IjM1NndabnE1d0JOTHVwK2ZuZUhRSGc9PSIsInZhbHVlIjoidmI4cWNjbEZUTHUwYUdhYWY0c2duR3pWS0Izd21jZ3RnODhEeG5TSU5MZFhDTE1vbXYxWEVaY0V2UmNocGZ5WFM1YXpvQjl6TldCSExsVmdNT2RGU1hSNnZOYUdRZXNzeUhjb2FNaTVJY0pwNHBWR2ZVa0dWQlVVQ2gxUy9FWEk2VFRCSzU2dFVNNEh5ckU3M1IweGhDekJoMFBUMzc4NVoyM28zT1FKRU1jQmtvWG5Dd1dib1RsSVNFUG5Ga0ZUbmlQQUJnU25sSThIanEyRWNuT2Y1cmZYbCsxSG5Na256NHhmdTRaYVVCTHZMWE94K0pHSytGMktJa2Fya29GWU0wUnRLVHFmWUFPd0E1bTBKTktvM2c9PSIsIm1hYyI6ImNmYmM4MTU1NmQ5ZGIwMTRhOTFmNGYyYzVkMDcyY2ExMmIzMzgwY2MzMTU5Mzk2YzRkMjUzOTVmYTlkMDc3MjEiLCJ0YWciOiIifQ==',NULL,'w3NZZsHFQngGWeGjVb2LeTWGenIlmsICd8U8PvjgxlB7MB92Ssf87jRoSX7a','2026-01-11 04:50:08','2026-01-20 02:36:24');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -379,4 +380,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-01-27 16:16:53
+-- Dump completed on 2026-02-03 15:11:34

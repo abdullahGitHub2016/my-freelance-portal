@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\ProjectListing;
+use App\Models\Project;
 use App\Models\Proposal;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -29,7 +29,7 @@ class MarketplaceSeeder extends Seeder
         ]);
 
         // 3. Create a Project Listing
-        $project = ProjectListing::create([
+        $project = Project::create([
             'client_id' => $client->id,
             'title' => 'Build a Laravel Website',
             'description' => 'Looking for a developer to build a site like Upwork.',

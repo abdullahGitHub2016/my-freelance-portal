@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proposal;
-use App\Models\ProjectListing;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -26,7 +26,7 @@ class ProposalController extends Controller
     /**
      * Store a newly created proposal in storage.
      */
-    public function store(Request $request, ProjectListing $project)
+    public function store(Request $request, Project $project)
     {
         // Using the validator facade or $request->validate with a type hint
         // helps remove the P1013 error in Intelephense.

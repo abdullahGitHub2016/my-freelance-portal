@@ -8,16 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Proposal extends Model
 {
     protected $fillable = [
-    'job_id', // <--- IMPORTANT: Add this!
-    'freelancer_id',
-    'cover_letter',
-    'bid_amount',
-    'estimated_days',
-    'status'
-];
-    public function projectListing(): BelongsTo
+        'job_id', // <--- IMPORTANT: Add this!
+        'freelancer_id',
+        'cover_letter',
+        'bid_amount',
+        'estimated_days',
+        'status'
+    ];
+    // In Proposal.php
+    public function project()
     {
-        return $this->belongsTo(ProjectListing::class, 'job_id');
+        return $this->belongsTo(Project::class, 'project_id'); // Ensure foreign key matches
     }
 
     public function freelancer(): BelongsTo

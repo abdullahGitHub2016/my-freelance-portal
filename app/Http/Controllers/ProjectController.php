@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProjectListing;
+use App\Models\Project;
 use App\Models\Proposal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,19 +11,20 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 
-class ProjectListingController extends Controller
+class ProjectController extends Controller
 {
     /**
      * Display the 'Find Work' feed.
      */
     public function index(Request $request)
     {
-        $jobs = ProjectListing::query()
-            ->filter($request->only(['search', 'experience_levels', 'budget_type']))
+        $jobs = Project::query()
+            // Add 'min_budget' and 'max_budget' to the allowed filter keys
+            ->filter($request->only(['search', 'experience_levels', 'budget_type', 'min_budget', 'max_budget']))
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('Projects/SearchResults', [ // Path updated to Projects/
+        return Inertia::render('Projects/SearchResults', [
             'jobs' => $jobs,
             'filters' => $request->all(),
         ]);
@@ -34,7 +35,7 @@ class ProjectListingController extends Controller
      * * IMPORTANT: The variable $projectListing MUST match the {projectListing}
      * parameter in your routes/web.php for Route Model Binding to work.
      */
-    public function show(ProjectListing $projectListing): Response
+    public function show(Project $projectListing): Response
     {
         // Load the client relationship
         $projectListing->load('client:id,name');
@@ -48,7 +49,7 @@ class ProjectListingController extends Controller
     /**
      * Store a new project listing.
      */
-    public function store(Request $request, ProjectListing $projectListing)
+    public function store(Request $request, Project $projectListing)
     {
         // DEBUG: If you still get the error, uncomment the line below to test
         // dd($projectListing->toArray());

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 
-class ProjectListing extends Model
+class Project extends Model
 {
     use HasFactory;
 
@@ -40,19 +40,18 @@ class ProjectListing extends Model
     }
 
     // A master scope to handle all incoming request filters
-    public function scopeFilter(Builder $query, array $filters)
+    public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('title', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+            $query->where('title', 'like', "%{$search}%");
         })
             ->when($filters['experience_levels'] ?? null, function ($query, $levels) {
-                // Handled as an array from the frontend checkboxes
                 $query->whereIn('experience_level', $levels);
             })
             ->when($filters['budget_type'] ?? null, function ($query, $type) {
                 $query->where('budget_type', $type);
             })
+            // ADD THIS LOGIC FOR BUDGET RANGES
             ->when($filters['min_budget'] ?? null, function ($query, $min) {
                 $query->where('budget_amount', '>=', $min);
             })
