@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Proposal extends Model
 {
     protected $fillable = [
-        'job_id', // <--- IMPORTANT: Add this!
+        'project_id', // <--- IMPORTANT: Add this!
         'freelancer_id',
         'cover_letter',
         'bid_amount',
@@ -16,10 +16,11 @@ class Proposal extends Model
         'status'
     ];
     // In Proposal.php
-    public function project()
-    {
-        return $this->belongsTo(Project::class, 'project_id'); // Ensure foreign key matches
-    }
+    public function project(): BelongsTo
+{
+    // By removing the second argument, Laravel now looks for 'project_id' automatically
+    return $this->belongsTo(Project::class);
+}
 
     public function freelancer(): BelongsTo
     {

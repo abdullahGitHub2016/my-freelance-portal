@@ -17,7 +17,7 @@ class ProposalController extends Controller
     {
         return Inertia::render('Proposals/Index', [
             'proposals' => Proposal::where('freelancer_id', Auth::id())
-                ->with('projectListing')
+                ->with(['project']) // This gets the Project AND the User who posted it
                 ->latest()
                 ->get()
         ]);
@@ -31,11 +31,14 @@ class ProposalController extends Controller
         // Using the validator facade or $request->validate with a type hint
         // helps remove the P1013 error in Intelephense.
         /** @var \Illuminate\Http\Request $request */
+        //dd($request->all(), $project->toArray());
+
         $validated = $request->validate([
             'cover_letter'   => 'required|string|min:20',
             'bid_amount'     => 'required|numeric|min:1',
             'estimated_days' => 'required|integer|min:1',
         ]);
+
 
         // Prevent duplicate proposals for the same job
         $alreadyApplied = $project->proposals()
@@ -59,5 +62,15 @@ class ProposalController extends Controller
 
         return redirect()->route('proposals.index')
             ->with('message', 'Proposal submitted successfully!');
+    }
+
+    public function myProposals()
+    {
+        return Inertia::render('Proposals/Index', [
+            'proposals' => Proposal::where('freelancer_id', Auth::id())
+                ->with('project') // Loads the linked Project model
+                ->latest()
+                ->get()
+        ]);
     }
 }

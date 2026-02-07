@@ -24,13 +24,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
-    Route::get('/projects/{projectListing}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
     // This will be the main "Find Work" page
     Route::get('/find-work', [ProjectController::class, 'index'])->name('projects.index');
 
     // --- Proposals ---
     // Freelancers submit proposals to a specific project
-Route::post('/projects/{projectListing}/proposals', [ProposalController::class, 'store'])
+Route::post('/projects/{project}/proposals', [ProposalController::class, 'store'])
     ->name('proposals.store');
 
     Route::get('/my-proposals', [ProposalController::class, 'myProposals'])

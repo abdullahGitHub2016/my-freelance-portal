@@ -19,10 +19,10 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $jobs = Project::query()
-            // Add 'min_budget' and 'max_budget' to the allowed filter keys
-            ->filter($request->only(['search', 'experience_levels', 'budget_type', 'min_budget', 'max_budget']))
-            ->paginate(10)
-            ->withQueryString();
+            ->with(['client']) // Load client for payment status
+            ->withCount('proposals') // Load count for proposal ranges
+            ->filter($request->only(['search', 'experience_levels', 'budget_type']))
+            ->paginate(10);
 
         return Inertia::render('Projects/SearchResults', [
             'jobs' => $jobs,
@@ -32,29 +32,33 @@ class ProjectController extends Controller
 
     /**
      * Display the specific project details.
-     * * IMPORTANT: The variable $projectListing MUST match the {projectListing}
+     * * IMPORTANT: The variable $project MUST match the {project}
      * parameter in your routes/web.php for Route Model Binding to work.
      */
-    public function show(Project $projectListing): Response
+    public function show(Project $project)
     {
-        // Load the client relationship
-        $projectListing->load('client:id,name');
-
         return Inertia::render('Projects/Show', [
-            'project' => $projectListing,
-            'auth_user_id' => Auth::id(),
+            'project' => $project->loadCount('proposals')->load('client'),
+            'auth' => [
+                'user' => Auth::user(),
+            ],
+            // Dynamic stats
+            'stats' => [
+                'proposals_count' => $project->proposals()->count(),
+                'is_verified' => (bool) $project->client->email_verified_at, // Example logic
+            ]
         ]);
     }
 
     /**
      * Store a new project listing.
      */
-    public function store(Request $request, Project $projectListing)
+    public function store(Request $request, Project $project)
     {
         // DEBUG: If you still get the error, uncomment the line below to test
-        // dd($projectListing->toArray());
+        // dd($project->toArray());
 
-        $id = $projectListing->id; // The red underline should disappear now
+        $id = $project->id; // The red underline should disappear now
 
         $validated = $request->validate([
             'cover_letter'   => 'required|string|min:20',
@@ -64,7 +68,7 @@ class ProjectController extends Controller
 
         // We manually set the job_id to ensure it's not null
         $proposal = new \App\Models\Proposal();
-        $proposal->job_id = $projectListing->id;
+        $proposal->job_id = $project->id;
         $proposal->freelancer_id = Auth::id();
         $proposal->cover_letter = $validated['cover_letter'];
         $proposal->bid_amount = $validated['bid_amount'];
