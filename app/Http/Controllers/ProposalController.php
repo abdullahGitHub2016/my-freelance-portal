@@ -27,16 +27,7 @@ class ProposalController extends Controller
 
 public function create(Project $project)
 {
-    // Agile Check: Don't let them even see the form if they already applied
-    $alreadyApplied = $project->proposals()
-        ->where('freelancer_id', Auth::id())
-        ->exists();
-
-    if ($alreadyApplied) {
-        return redirect()->route('projects.show', $project->id)
-            ->with('error', 'You have already applied for this job.');
-    }
-
+    // Ensure this string matches your file path: "Proposals/Create"
     return Inertia::render('Proposals/Create', [
         'project' => $project->load('client')
     ]);

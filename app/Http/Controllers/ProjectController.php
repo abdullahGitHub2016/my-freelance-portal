@@ -35,17 +35,16 @@ class ProjectController extends Controller
      * * IMPORTANT: The variable $project MUST match the {project}
      * parameter in your routes/web.php for Route Model Binding to work.
      */
-    public function show(Project $project)
+public function show(Project $project)
     {
         return Inertia::render('Projects/Show', [
             'project' => $project->loadCount('proposals')->load('client'),
             'auth' => [
                 'user' => Auth::user(),
             ],
-            // Dynamic stats
             'stats' => [
                 'proposals_count' => $project->proposals()->count(),
-                'is_verified' => (bool) $project->client->email_verified_at, // Example logic
+                'is_verified' => (bool) $project->client->email_verified_at,
             ],
             'hasSubmittedProposal' => $project->proposals()
                 ->where('freelancer_id', Auth::id())
@@ -53,17 +52,13 @@ class ProjectController extends Controller
         ]);
     }
 
-
     // app/Http/Controllers/ProjectController.php
 
     public function create()
     {
-        // Agile Security: Ensure only clients can access the form
         if (Auth::user()->role !== 'client') {
-            return redirect()->route('projects.index')
-                ->with('error', 'Only clients can post new jobs.');
+            return redirect()->route('projects.index')->with('error', 'Only clients can post jobs.');
         }
-
         return Inertia::render('Projects/Create');
     }
 
@@ -73,28 +68,63 @@ class ProjectController extends Controller
     /**
      * Store a new project listing (Client Action).
      */
+/**
+     * Store a NEW PROJECT (Client Action)
+     */
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'title'            => 'required|string|max:255',
-                'description'      => 'required|string',
-                'category'         => 'required|string',
-                'budget_type'      => 'required|in:fixed,hourly',
-                'budget_amount'    => 'required|numeric',
-                'experience_level' => 'required|in:entry,intermediate,expert',
-            ]);
+        $validated = $request->validate([
+            'title'            => 'required|string|max:255',
+            'description'      => 'required|string',
+            'category'         => 'required|string',
+            'budget_type'      => 'required|in:fixed,hourly',
+            'budget_amount'    => 'required|numeric|min:1',
+            'experience_level' => 'required|in:entry,intermediate,expert',
+            'duration'         => 'nullable|string',
+        ]);
 
-            // Using the relationship ensures client_id is set automatically
-            /** @var \App\Models\User $user */
-            $user = Auth::user();
-            $user->projects()->create($validated);
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
 
-            return redirect()->route('projects.my-postings')->with('success', 'Project created!');
-        } catch (\Exception $e) {
-            // If it fails, this will show you why in the browser/logs
-            dd($e->getMessage());
-        }
+        // Using relationship ensures client_id is set automatically
+        $user->projects()->create([
+            ...$validated,
+            'status' => 'open',
+            'connects_required' => 4,
+        ]);
+
+        return redirect()->route('projects.my-postings')->with('success', 'Job posted!');
+    }
+
+/**
+ * Show the form for editing the project.
+ */
+public function edit(Project $project)
+    {
+        if (Auth::id() !== $project->client_id) abort(403);
+        return Inertia::render('Projects/Edit', ['project' => $project]);
+    }
+
+/**
+ * Update the project in the database.
+ */
+public function update(Request $request, Project $project)
+    {
+        if (Auth::id() !== $project->client_id) abort(403);
+
+        $validated = $request->validate([
+            'title'            => 'required|string|max:255',
+            'description'      => 'required|string',
+            'category'         => 'required|string',
+            'budget_type'      => 'required|in:fixed,hourly',
+            'budget_amount'    => 'required|numeric',
+            'experience_level' => 'required|in:entry,intermediate,expert',
+            'status'           => 'required|in:open,in_progress,completed,cancelled',
+        ]);
+
+        $project->update($validated);
+
+        return redirect()->route('projects.my-postings')->with('success', 'Updated!');
     }
 
     // app/Http/Controllers/ProjectController.php
@@ -137,14 +167,11 @@ class ProjectController extends Controller
 
     public function myPostings()
     {
-        /** @var \App\Models\User $user */
+            /** @var \App\Models\User $user */
         $user = Auth::user();
 
-        return Inertia::render('Projects/MyPostings', [
-            'projects' => $user->projects() // IDE will now see this relationship
-                ->withCount('proposals')
-                ->latest()
-                ->get()
+    return Inertia::render('Projects/MyPostings', [
+            'projects' => $user->projects()->withCount('proposals')->latest()->get()
         ]);
     }
 }
