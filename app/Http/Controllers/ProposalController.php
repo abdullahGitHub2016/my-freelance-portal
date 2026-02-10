@@ -25,13 +25,13 @@ class ProposalController extends Controller
 
     // app/Http/Controllers/ProposalController.php
 
-public function create(Project $project)
-{
-    // Ensure this string matches your file path: "Proposals/Create"
-    return Inertia::render('Proposals/Create', [
-        'project' => $project->load('client')
-    ]);
-}
+    public function create(Project $project)
+    {
+        // Ensure this string matches your file path: "Proposals/Create"
+        return Inertia::render('Proposals/Create', [
+            'project' => $project->load('client')
+        ]);
+    }
 
     /**
      * Store a newly created proposal in storage.
