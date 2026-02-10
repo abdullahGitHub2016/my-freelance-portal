@@ -35,7 +35,7 @@ class ProjectController extends Controller
      * * IMPORTANT: The variable $project MUST match the {project}
      * parameter in your routes/web.php for Route Model Binding to work.
      */
-public function show(Project $project)
+    public function show(Project $project)
     {
         return Inertia::render('Projects/Show', [
             'project' => $project->loadCount('proposals')->load('client'),
@@ -68,7 +68,7 @@ public function show(Project $project)
     /**
      * Store a new project listing (Client Action).
      */
-/**
+    /**
      * Store a NEW PROJECT (Client Action)
      */
     public function store(Request $request)
@@ -96,19 +96,19 @@ public function show(Project $project)
         return redirect()->route('projects.my-postings')->with('success', 'Job posted!');
     }
 
-/**
- * Show the form for editing the project.
- */
-public function edit(Project $project)
+    /**
+     * Show the form for editing the project.
+     */
+    public function edit(Project $project)
     {
         if (Auth::id() !== $project->client_id) abort(403);
         return Inertia::render('Projects/Edit', ['project' => $project]);
     }
 
-/**
- * Update the project in the database.
- */
-public function update(Request $request, Project $project)
+    /**
+     * Update the project in the database.
+     */
+    public function update(Request $request, Project $project)
     {
         if (Auth::id() !== $project->client_id) abort(403);
 
@@ -167,10 +167,10 @@ public function update(Request $request, Project $project)
 
     public function myPostings()
     {
-            /** @var \App\Models\User $user */
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
-    return Inertia::render('Projects/MyPostings', [
+        return Inertia::render('Projects/MyPostings', [
             'projects' => $user->projects()->withCount('proposals')->latest()->get()
         ]);
     }
