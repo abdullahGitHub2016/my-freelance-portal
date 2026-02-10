@@ -19,9 +19,9 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $jobs = Project::query()
-            ->with(['client']) // Load client for payment status
-            ->withCount('proposals') // Load count for proposal ranges
-            ->filter($request->only(['search', 'experience_levels', 'budget_type']))
+            ->with(['client', 'country']) // 'country' is the requirement for the freelancer
+            ->withCount('proposals')
+            ->latest()
             ->paginate(10);
 
         return Inertia::render('Projects/SearchResults', [
@@ -46,37 +46,105 @@ class ProjectController extends Controller
             'stats' => [
                 'proposals_count' => $project->proposals()->count(),
                 'is_verified' => (bool) $project->client->email_verified_at, // Example logic
-            ]
+            ],
+            'hasSubmittedProposal' => $project->proposals()
+                ->where('freelancer_id', Auth::id())
+                ->exists()
         ]);
+    }
+
+
+    // app/Http/Controllers/ProjectController.php
+
+    public function create()
+    {
+        // Agile Security: Ensure only clients can access the form
+        if (Auth::user()->role !== 'client') {
+            return redirect()->route('projects.index')
+                ->with('error', 'Only clients can post new jobs.');
+        }
+
+        return Inertia::render('Projects/Create');
     }
 
     /**
      * Store a new project listing.
      */
-    public function store(Request $request, Project $project)
+    /**
+     * Store a new project listing (Client Action).
+     */
+    public function store(Request $request)
     {
-        // DEBUG: If you still get the error, uncomment the line below to test
-        // dd($project->toArray());
+        try {
+            $validated = $request->validate([
+                'title'            => 'required|string|max:255',
+                'description'      => 'required|string',
+                'category'         => 'required|string',
+                'budget_type'      => 'required|in:fixed,hourly',
+                'budget_amount'    => 'required|numeric',
+                'experience_level' => 'required|in:entry,intermediate,expert',
+            ]);
 
-        $id = $project->id; // The red underline should disappear now
+            // Using the relationship ensures client_id is set automatically
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
+            $user->projects()->create($validated);
+
+            return redirect()->route('projects.my-postings')->with('success', 'Project created!');
+        } catch (\Exception $e) {
+            // If it fails, this will show you why in the browser/logs
+            dd($e->getMessage());
+        }
+    }
+
+    // app/Http/Controllers/ProjectController.php
+
+    public function proposals(Project $project)
+    {
+        // Authorization: Only the person who posted the job can see the bids
+        if (Auth::id() !== $project->client_id) {
+            abort(403);
+        }
+
+        return Inertia::render('Projects/Proposals', [
+            'project' => $project,
+            'proposals' => $project->proposals()
+                ->with(['freelancer.address.country']) // Lively location data
+                ->latest()
+                ->get()
+        ]);
+    }
+
+    public function updateStatus(Request $request, Proposal $proposal)
+    {
+        // Authorization: Only the client who owns the project can accept/decline bids
+        if (Auth::id() !== $proposal->project->client_id) {
+            abort(403);
+        }
 
         $validated = $request->validate([
-            'cover_letter'   => 'required|string|min:20',
-            'bid_amount'     => 'required|numeric',
-            'estimated_days' => 'required|integer',
+            'status' => 'required|in:accepted,declined,pending',
         ]);
 
-        // We manually set the job_id to ensure it's not null
-        $proposal = new \App\Models\Proposal();
-        $proposal->job_id = $project->id;
-        $proposal->freelancer_id = Auth::id();
-        $proposal->cover_letter = $validated['cover_letter'];
-        $proposal->bid_amount = $validated['bid_amount'];
-        $proposal->estimated_days = $validated['estimated_days'];
-        $proposal->status = 'pending';
+        $proposal->update([
+            'status' => $validated['status']
+        ]);
 
-        $proposal->save();
+        return back()->with('message', "Proposal has been {$validated['status']}.");
+    }
 
-        return redirect()->back()->with('success', 'Proposal submitted!');
+    // app/Http/Controllers/ProjectController.php
+
+    public function myPostings()
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        return Inertia::render('Projects/MyPostings', [
+            'projects' => $user->projects() // IDE will now see this relationship
+                ->withCount('proposals')
+                ->latest()
+                ->get()
+        ]);
     }
 }

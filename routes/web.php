@@ -29,18 +29,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/find-work', [ProjectController::class, 'index'])->name('projects.index');
 
     // --- Proposals ---
-    // Freelancers submit proposals to a specific project
-Route::post('/projects/{project}/proposals', [ProposalController::class, 'store'])
-    ->name('proposals.store');
-
     Route::get('/my-proposals', [ProposalController::class, 'myProposals'])
         ->name('proposals.index');
+
+    // Freelancers submit proposals to a specific project
+    Route::post('/projects/{project}/proposals', [ProposalController::class, 'store'])
+        ->name('proposals.store');
+    Route::get('/projects/{project}/proposals', [ProjectController::class, 'proposals'])
+        ->name('projects.proposals');
+    Route::get('projects/{project}/proposals/create', [ProposalController::class, 'create'])
+        ->name('proposals.create');
+
+    Route::patch('/proposals/{proposal}/status', [ProposalController::class, 'updateStatus'])
+        ->name('proposals.update-status');
+    // Add this line specifically:
+    Route::get('/my-postings', [ProjectController::class, 'myPostings'])
+        ->name('projects.my-postings');
+
+
 
     // --- Profile Management ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
