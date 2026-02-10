@@ -69,11 +69,11 @@ export default function Show({ auth, project, stats, hasSubmittedProposal }) {
                                             ) : (
                                                 isFreelancer && (
                                                     <Link
-    href={route('proposals.create', project.id)} // Must pass project.id
-    className="block w-full text-center bg-green-600 text-white font-bold py-3 rounded-full hover:bg-green-700 transition"
->
-    Apply Now
-</Link>
+                                                        href={route('proposals.create', project.id)} // Must pass project.id
+                                                        className="block w-full text-center bg-green-600 text-white font-bold py-3 rounded-full hover:bg-green-700 transition"
+                                                    >
+                                                        Apply Now
+                                                    </Link>
                                                 )
                                             )}
                                         </>
